@@ -67,6 +67,7 @@ public class MyPanel extends JPanel implements KeyListener,Runnable {
         //画出爆炸效果
         if(!bombs.isEmpty())
             drawBomb(g);
+        System.out.println(111);
     }
 
     /**
