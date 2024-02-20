@@ -7,10 +7,11 @@ public class HspTankGame01 extends JFrame {
     public final static int WIDTH = 1200;
     MyPanel mp = null;
     public static void main(String[] args) {
-        HspTankGame01 hspTankGame01 = new HspTankGame01();
+        HspTankGame01 hspTankGame01 = new HspTankGame01("坦克大战");
 
     }
-    public HspTankGame01(){
+    public HspTankGame01(String title){
+        super(title);
         mp = new MyPanel();
         this.add(mp);
         this.setSize(WIDTH, HEIGHT);
