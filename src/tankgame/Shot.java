@@ -7,7 +7,7 @@ package tankgame;
 public class Shot implements Runnable{
     private int x; // 子弹的横坐标
     private int y; // 子弹的纵坐标
-    private TankDirect direct; // 子弹的方向
+    private final TankDirect direct; // 子弹的方向
     private static final int SPEED = 5; // 子弹的速度
     private static final int LENGTH = 3; // 子弹的长宽
     private boolean isLive = true; // 子弹是否存活

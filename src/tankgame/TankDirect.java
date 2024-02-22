@@ -8,7 +8,7 @@ import java.util.Random;
 public enum TankDirect {
     UP(0), DOWN(1), LEFT(2), RIGHT(3);
     final int value;
-    private TankDirect(int value) {
+    TankDirect(int value) {
         this.value = value;
     }
 

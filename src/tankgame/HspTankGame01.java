@@ -8,10 +8,9 @@ import javax.swing.*;
 public class HspTankGame01 extends JFrame {
     public final static int HEIGHT = 800;
     public final static int WIDTH = 1200;
-    MyPanel mp = null;
+    MyPanel mp;
     public static void main(String[] args) {
-        HspTankGame01 hspTankGame01 = new HspTankGame01("坦克大战");
-
+        new HspTankGame01("坦克大战");
     }
     public HspTankGame01(String title){
         super(title);
