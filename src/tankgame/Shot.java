@@ -1,5 +1,9 @@
 package tankgame;
 
+/**
+ * 子弹类
+ * 并且有子弹的移动线程，将每一颗子弹的移动放到一个线程中
+ */
 public class Shot implements Runnable{
     private int x; // 子弹的横坐标
     private int y; // 子弹的纵坐标

@@ -2,6 +2,9 @@ package tankgame;
 
 import java.util.Vector;
 
+/**
+ * 坦克父类
+ */
 public class Tank {
     private int x; // 坦克的横坐标
     private int y; // 坦克的纵坐标

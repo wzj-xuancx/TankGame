@@ -1,5 +1,9 @@
 package tankgame;
 
+/**
+ * 敌方坦克
+ * 实现移动的线程
+ */
 public class EnemyTank extends Tank implements Runnable{
     private final static String Type = "ENEMY_TANK";
     private final int SLEEP_TIME = 500 + (int)(Math.random() * 100 - 50);

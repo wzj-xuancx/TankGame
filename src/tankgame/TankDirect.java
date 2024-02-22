@@ -1,5 +1,10 @@
 package tankgame;
 
+import java.util.Random;
+
+/**
+ * 坦克方向枚举类
+ */
 public enum TankDirect {
     UP(0), DOWN(1), LEFT(2), RIGHT(3);
     final int value;
@@ -7,14 +12,12 @@ public enum TankDirect {
         this.value = value;
     }
 
+    /**
+     * 为了方便随机生成坦克方向
+     * @return 返回的随机的坦克方向
+     */
     public static TankDirect randomDirect() {
-        int random = (int) (Math.random() * 4);
-        return switch (random) {
-            case 0 -> UP;
-            case 1 -> DOWN;
-            case 2 -> LEFT;
-            case 3 -> RIGHT;
-            default -> throw new IllegalStateException("Unexpected value: " + random);
-        };
+        Random random = new Random();
+        return  TankDirect.values()[random.nextInt(TankDirect.values().length)];
     }
 }

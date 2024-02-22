@@ -1,5 +1,8 @@
 package tankgame;
 
+/**
+ * 爆炸效果设置
+ */
 public class Bomb {
     private int x,y; //炸弹的横纵坐标
     private int life = 12; //生命周期

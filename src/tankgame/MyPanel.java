@@ -4,37 +4,35 @@ import javax.swing.*;
 import java.awt.*;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
+import java.util.Random;
 import java.util.Vector;
-import java.util.concurrent.TimeUnit;
 
 /**
  * 坦克大战的绘图区域
  */
 public class MyPanel extends JPanel implements KeyListener,Runnable {
-    MyTank myTank = null; // 我的坦克
+    MyTank myTank; // 我的坦克
 
-    Vector<EnemyTank> emptyTankVector = new Vector<>(); // 敌人的坦克集合
-    private final static int emptyTankSize = 3; // 敌人的坦克数量
+    Vector<EnemyTank> enemyTankVector = new Vector<>(); // 敌人的坦克集合
+    private final static int ENEMYTANKSIZE = 5; // 敌人的坦克数量
 
     Vector<Bomb> bombs = new Vector<>(); // 爆炸效果集合
-    Image image1 = null; // 爆炸效果图片
-    Image image2 = null; // 我的坦克图片
-    Image image3 = null; // 敌人的坦克图片
+    Image []image = new Image[3]; // 爆炸效果图片
 
     /**
      * 构造器，初始化坦克等
      */
     public MyPanel() {
         myTank = new MyTank(600, 600, TankDirect.valueOf("UP"));
-        for (int i = 0; i < emptyTankSize; i++) {
-            EnemyTank enemyTank = new EnemyTank((i + 1)*200,100,TankDirect.valueOf("DOWN"));
-            emptyTankVector.add(enemyTank);
+        for (int i = 0; i < ENEMYTANKSIZE; i++) {
+            EnemyTank enemyTank = new EnemyTank(new Random().nextInt(HspTankGame01.WIDTH),new Random().nextInt(HspTankGame01.HEIGHT),TankDirect.randomDirect());
+            enemyTankVector.add(enemyTank);
             new Thread(enemyTank).start();
         }
         //不用Toolkit，不然第一次加载不出来
-        image1 = new ImageIcon("src\\images\\bomb1.png").getImage();
-        image2 = new ImageIcon("src\\images\\bomb2.png").getImage();
-        image3 = new ImageIcon("src\\images\\bomb3.png").getImage();
+        for (int i = 0; i < 3; i++) {
+            image[i] = new ImageIcon("src\\images\\bomb" + i + ".png").getImage();
+        }
     }
 
     /**
@@ -59,10 +57,10 @@ public class MyPanel extends JPanel implements KeyListener,Runnable {
             drawShot(myTank, g);
         }
         //画出敌人的坦克和子弹
-        for (EnemyTank emptyTank : emptyTankVector) {
-            if(!emptyTank.getIsLive()) continue;
-            drawTank(emptyTank.getX(), emptyTank.getY(), g, emptyTank.getDirect(), emptyTank.getType());
-            drawShot(emptyTank, g);
+        for (EnemyTank enemyTank : enemyTankVector) {
+            if(!enemyTank.getIsLive()) continue;
+            drawTank(enemyTank.getX(), enemyTank.getY(), g, enemyTank.getDirect(), enemyTank.getType());
+            drawShot(enemyTank, g);
         }
         //画出爆炸效果
         if(!bombs.isEmpty())
@@ -144,11 +142,11 @@ public class MyPanel extends JPanel implements KeyListener,Runnable {
         for (int i = 0;i < bombs.size();i++) {
             Bomb bomb = bombs.get(i);
             if(bomb.getLife() > 8){
-                g.drawImage(image1,bomb.getX(),bomb.getY(),LENGTH,LENGTH,this);
+                g.drawImage(image[0],bomb.getX(),bomb.getY(),LENGTH,LENGTH,this);
             }else if(bomb.getLife() > 4){
-                g.drawImage(image2,bomb.getX(),bomb.getY(),LENGTH,LENGTH,this);
+                g.drawImage(image[1],bomb.getX(),bomb.getY(),LENGTH,LENGTH,this);
             }else if(bomb.getLife() > 0){
-                g.drawImage(image3,bomb.getX(),bomb.getY(),LENGTH,LENGTH,this);
+                g.drawImage(image[2],bomb.getX(),bomb.getY(),LENGTH,LENGTH,this);
             }else{
                 bombs.remove(bomb);
                 CheckDeath();
@@ -247,18 +245,18 @@ public class MyPanel extends JPanel implements KeyListener,Runnable {
                 e.printStackTrace();
             }
             for (int i = 0; i < myTank.shots.size(); i++) {
-                Shot mytankShot = myTank.shots.get(i);
-                if(mytankShot != null && mytankShot.getIsLive()){
-                    for(int j = 0;j < emptyTankVector.size();j++){
-                        EnemyTank enemyTank = emptyTankVector.get(j);
-                        hitTank(mytankShot,enemyTank);
+                Shot shot = myTank.shots.get(i);
+                if(shot != null && shot.getIsLive()){
+                    for(int j = 0;j < enemyTankVector.size();j++){
+                        EnemyTank enemyTank = enemyTankVector.get(j);
+                        hitTank(shot,enemyTank);
                         if(!enemyTank.getIsLive()){
-                            emptyTankVector.remove(enemyTank);
+                            enemyTankVector.remove(enemyTank);
                         }
                     }
                 }
             }
-            for (EnemyTank enemytank : emptyTankVector) {
+            for (EnemyTank enemytank : enemyTankVector) {
                 for (Shot shot : enemytank.shots) {
                     if (shot != null && shot.getIsLive()) {
                         hitTank(shot, myTank);

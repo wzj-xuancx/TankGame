@@ -2,6 +2,9 @@ package tankgame;
 
 import javax.swing.*;
 
+/**
+ * 主界面的设置
+ */
 public class HspTankGame01 extends JFrame {
     public final static int HEIGHT = 800;
     public final static int WIDTH = 1200;

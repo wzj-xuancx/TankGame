@@ -2,6 +2,9 @@ package tankgame;
 
 import java.util.Vector;
 
+/**
+ * 我方坦克
+ */
 public class MyTank extends Tank{
     public static final int MAX_SHOT = 5;
     private static final String Type = "MY_TANK";

@@ -1,5 +1,9 @@
 package tankgame;
 
+/**
+ * 敌方坦克开火的时间间隔控制线程
+ * 将开火和移动分开，避免时间延时碰撞
+ */
 public class EnemyShot implements Runnable{
     EnemyTank enemyTank;
     private final int SHOT_SLEEP_TIME = 500 + (int)(Math.random() * 100 - 50);
