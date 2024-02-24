@@ -12,26 +12,48 @@ import java.util.Vector;
  */
 public class MyPanel extends JPanel implements KeyListener,Runnable {
     MyTank myTank; // 我的坦克
+    private String key; // 用于记录是否恢复上一局游戏
 
     Vector<EnemyTank> enemyTankVector = new Vector<>(); // 敌人的坦克集合
 
     Vector<Bomb> bombs = new Vector<>(); // 爆炸效果集合
     Image []image = new Image[3]; // 爆炸效果图片
 
+    AePlayWave aePlayWave;//音乐
+
     /**
      * 构造器，初始化坦克等
      */
-    public MyPanel() {
+    public MyPanel(String key) {
         // 敌人的坦克数量
-        int enemyTankSize = 10;
+        int enemyTankSize = 7;
         int myTankSize = 1;
-        //初始化坦克
-        addMyTank(myTankSize);
-        addEnemyTank(enemyTankSize);
         //初始化爆炸图片
         for (int i = 0; i < 3; i++) {
             image[i] = new ImageIcon("src\\images\\bomb" + i + ".png").getImage();
         }
+
+        if(key.equals("2")){ //恢复
+            myTank = Recorder.getMytank();
+            enemyTankVector = Recorder.getEnemyTanks();
+            myTank.shots = new Vector<>();
+            //启动敌方坦克和子弹
+            for(EnemyTank enemyTank : enemyTankVector){
+                enemyTank.shots = new Vector<>();
+                new Thread(enemyTank).start();
+            }
+        }else{
+            //初始化坦克
+            addMyTank(myTankSize);
+            addEnemyTank(enemyTankSize);
+            //设置
+            Recorder.setEnemyTanks(enemyTankVector);
+            Recorder.setMytank(myTank);
+        }
+
+        //启动音乐
+        aePlayWave = new AePlayWave("src\\musics\\gameBackground.wav");
+        new Thread(aePlayWave).start();
     }
 
     /**
@@ -81,19 +103,21 @@ public class MyPanel extends JPanel implements KeyListener,Runnable {
             for(EnemyTank preEnemyTank : nowAddEnemyTanks){
                 preEnemyTank.otherTanks.add(enemyTank);
                 enemyTank.otherTanks.add(preEnemyTank);
+
+                preEnemyTank.otherTanks.add(myTank);
+                myTank.otherTanks.add(preEnemyTank);
             }
+            myTank.otherTanks.add(enemyTank);
+            enemyTank.otherTanks.add(myTank);
             nowAddEnemyTanks.add(enemyTank);
         }
         //原来的先添加
         for (EnemyTank enemyTank : enemyTankVector) {
             enemyTank.otherTanks.addAll(nowAddEnemyTanks);
         }
-        myTank.otherTanks.addAll(nowAddEnemyTanks);
-
         //后来的再把原来的全部加进去
         for(EnemyTank enemyTank : nowAddEnemyTanks){
             enemyTank.otherTanks.addAll(enemyTankVector);
-            enemyTank.otherTanks.add(myTank);
             enemyTankVector.add(enemyTank);
             new Thread(enemyTank).start();
         }
@@ -125,7 +149,7 @@ public class MyPanel extends JPanel implements KeyListener,Runnable {
         g.drawString("剩余子弹数量："+ (MyTank.MAX_SHOT - myTank.shots.size()),10,50);
 
         //记录击败敌人的数量
-        g.drawString("击败敌人坦克数量："+ (myTank.getKillEnemyCount()),10,100);
+        g.drawString("击败敌人坦克数量："+ (Recorder.getKillEnemyCount()),10,100);
 
         //画出我的坦克和子弹
         if(myTank.getIsLive()) {
@@ -261,15 +285,16 @@ public class MyPanel extends JPanel implements KeyListener,Runnable {
      */
     public void CheckDeath(){
         if(!myTank.getIsLive()){
-            JOptionPane.showMessageDialog(null,"游戏结束,你一共击败了" + myTank.getKillEnemyCount() + "辆坦克","游戏结束",JOptionPane.INFORMATION_MESSAGE);
+            JOptionPane.showMessageDialog(null,"游戏结束,你一共击败了" + Recorder.getKillEnemyCount() + "辆坦克","游戏结束",JOptionPane.INFORMATION_MESSAGE);
+            Recorder.keepRecord();
             System.exit(0);
         }
     }
 
     public void EnemyTankDeath(EnemyTank enemyTank){
         //从敌方坦克集合中移除敌方坦克，增加击杀数
+        Recorder.addKillEnemyCount();
         enemyTankVector.remove(enemyTank);
-        myTank.addKillEnemyCount();
 
         //从”其他坦克“集合中移除敌方坦克
         for(EnemyTank tank : enemyTankVector){
@@ -292,7 +317,6 @@ public class MyPanel extends JPanel implements KeyListener,Runnable {
      */
     @Override
     public void keyPressed(KeyEvent e) {
-//        System.out.println("x = " + myTank.getX() + ", y = " + myTank.getY());
         switch(e.getKeyCode()){
             case KeyEvent.VK_UP,KeyEvent.VK_W -> myTank.moveUp();
             case KeyEvent.VK_DOWN,KeyEvent.VK_S -> myTank.moveDown();
@@ -317,6 +341,10 @@ public class MyPanel extends JPanel implements KeyListener,Runnable {
     @Override
     public void run() {
         while (true) {
+            //播放音乐
+            if (!aePlayWave.getIsLive()) {
+                new Thread(aePlayWave).start();
+            }
             try {
                 Thread.sleep(20);
             } catch (InterruptedException e) {
@@ -325,7 +353,8 @@ public class MyPanel extends JPanel implements KeyListener,Runnable {
             for (int i = 0; i < myTank.shots.size(); i++) {
                 Shot shot = myTank.shots.get(i);
                 if(shot != null && shot.getIsLive()){
-                    for (EnemyTank enemyTank : enemyTankVector) {
+                    for (int j = 0;j < enemyTankVector.size();j++) {
+                        EnemyTank enemyTank = enemyTankVector.get(j);
                         hitTank(shot, enemyTank);
                         if (!enemyTank.getIsLive()) {
                             EnemyTankDeath(enemyTank);

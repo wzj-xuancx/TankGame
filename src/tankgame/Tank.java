@@ -1,17 +1,18 @@
 package tankgame;
 
+import java.io.Serializable;
 import java.util.Vector;
 
 /**
  * 坦克父类
  */
-public class Tank {
+public class Tank implements Serializable {
     private int x; // 坦克的横坐标
     private int y; // 坦克的纵坐标
     private TankDirect direct; // 坦克的方向
     private static final int SPEED = 6; // 坦克的速度
     private boolean isLive = true;
-    public Vector<Shot> shots = new Vector<>();
+    public transient Vector<Shot> shots = new Vector<>();
     public Vector<Tank> otherTanks = new Vector<>();
 
     public Tank(int x, int y, TankDirect direct) {

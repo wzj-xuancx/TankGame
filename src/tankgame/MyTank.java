@@ -1,5 +1,6 @@
 package tankgame;
 
+import java.io.Serializable;
 import java.util.Vector;
 
 /**
@@ -8,7 +9,6 @@ import java.util.Vector;
 public class MyTank extends Tank{
     public static final int MAX_SHOT = 5;
     private static final String Type = "MY_TANK";
-    private int killEnemyCount = 0;
     public MyTank(int x, int y, TankDirect direct) {
         super(x, y, direct);
     }
@@ -29,14 +29,5 @@ public class MyTank extends Tank{
     }
     public String getType() {
         return Type;
-    }
-    public int getKillEnemyCount() {
-        return killEnemyCount;
-    }
-    public void setKillEnemyCount(int killEnemyCount) {
-        this.killEnemyCount = killEnemyCount;
-    }
-    public void addKillEnemyCount() {
-        killEnemyCount++;
     }
 }

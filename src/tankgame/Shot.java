@@ -1,10 +1,12 @@
 package tankgame;
 
+import java.io.Serializable;
+
 /**
  * 子弹类
  * 并且有子弹的移动线程，将每一颗子弹的移动放到一个线程中
  */
-public class Shot implements Runnable{
+public class Shot implements Runnable, Serializable {
     private int x; // 子弹的横坐标
     private int y; // 子弹的纵坐标
     private final TankDirect direct; // 子弹的方向
